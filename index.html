@@ -59,7 +59,34 @@ document.querySelectorAll('.team').forEach(el=>el.addEventListener('click',()=>{
 function show(id){['join','game','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
 $('startBtn').onclick=()=>{player=$('studentName').value.trim();if(!player){$('joinError').textContent='Атыңды енгіз.';return}if($('joinCode').value.trim().toUpperCase()!=='DETECT-26'){$('joinError').textContent='Қосылу коды қате.';return}$('joinError').textContent='';index=0;score=0;$('playerTag').textContent='👤 '+player;$('teamTag').textContent='👥 '+team;show('game');renderMission()};
 function renderMission(){answered=false;let m=missions[index];$('missionCount').textContent=`МИССИЯ ${index+1} / 5`;$('scoreNow').textContent=score;$('progressBar').style.width=(index/5*100)+'%';$('missionIcon').textContent=m.icon;$('missionTitle').textContent=m.title;$('missionStory').textContent=m.story;$('missionQuestion').textContent=m.q;$('feedback').innerHTML='';$('nextBtn').classList.add('hidden');$('nextBtn').textContent=index===4?'НӘТИЖЕНІ КӨРУ →':'КЕЛЕСІ МИССИЯ →';$('answers').innerHTML='';m.a.forEach((a,i)=>{let b=document.createElement('button');b.className='answer';b.textContent=String.fromCharCode(65+i)+'. '+a;b.onclick=()=>choose(i,b);$('answers').appendChild(b)})}
-function choose(i,btn){if(answered)return;answered=true;let m=missions[index];document.querySelectorAll('.answer').forEach((b,j)=>{b.disabled=true;if(j===m.correct)b.style.border='2px solid #75e6a5'});if(i===m.correct){score+=20;$('feedback').innerHTML='<div class="feedback good">✅ '+m.why+'</div>'}else{$('feedback').innerHTML='<div class="feedback bad">❌ Дұрыс жауап: '+m.a[m.correct]+'.<br>'+m.why+'</div>'} $('scoreNow').textContent=score;$('progressBar').style.width=((index+1)/5*100)+'%';$('nextBtn').classList.remove('hidden')}
+function choose(i,btn){
+  if(answered) return;
+  answered=true;
+
+  let m=missions[index];
+
+  document.querySelectorAll('.answer').forEach((b,j)=>{
+    b.disabled=true;
+    b.classList.remove('chosen');
+
+    if(j===i) b.classList.add('chosen');
+
+    if(j===m.correct) {
+      b.style.border='2px solid #75e6a5';
+    }
+  });
+
+  if(i===m.correct){
+    score+=20;
+    $('feedback').innerHTML='<div class="feedback good">✅ '+m.why+'</div>';
+  } else {
+    $('feedback').innerHTML='<div class="feedback bad">❌ Дұрыс жауап: '+m.a[m.correct]+'.<br>'+m.why+'</div>';
+  }
+
+  $('scoreNow').textContent=score;
+  $('progressBar').style.width=((index+1)/5*100)+'%';
+  $('nextBtn').classList.remove('hidden');
+}
 $('nextBtn').onclick=()=>{if(index<4){index++;renderMission()}else finish()};
 async function finish(){
   show('result');
